@@ -1,3 +1,5 @@
+# https://www.youtube.com/watch?v=0eMU23VyzR8
+
 FROM python:3.9-buster
 
 WORKDIR /app
