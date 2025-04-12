@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///processor.db'
@@ -17,9 +16,11 @@ class Receipt(db.Model):
     total = db.Column(db.Float(), nullable=False)
 
 class Item(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     receipt_id = db.Column(db.String(50), db.ForeignKey('receipt.id'), nullable=False)
     description = db.Column(db.String(length=200), nullable=False)
     price = db.Column(db.Float(), nullable=False, unique=False)
+
 
 # post request: pass in receipt json and store in recept and item table, generate id and store, response should be the id
 
@@ -32,4 +33,6 @@ def hello_world():
 
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(host='0.0.0.0', debug=True)
