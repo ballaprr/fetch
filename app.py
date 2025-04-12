@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 import uuid
 from datetime import datetime
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///processor.db'
@@ -43,7 +46,33 @@ def process():
 
     db.session.commit()
     return jsonify({"id": receipt_id}), 201
+
+
 # get request: pass in id to path and using criteria compute the points and return
+
+@app.route('/receipts/<string:receipt_id>/points', methods=['GET'])
+def get_points(receipt_id):
+    receipt = db.session.get(Receipt, receipt_id)
+
+    if not receipt:
+        return {"error": "Receipt not found"}, 404
+    # 1 pointer for every alphanumeric character in the retailer name
+     
+
+    # 50 points if total is round dollar amount with no cents
+
+    # 25 points if total is multiple of .25
+
+    # 5 points for every two items in the receipt
+
+    # trimmed length of item multiple of 3, * 0.2 round 
+    
+    return jsonify({
+        "id": receipt.id
+    })
+    
+    
+
 
 if __name__ == '__main__':
     with app.app_context():
