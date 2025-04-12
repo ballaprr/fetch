@@ -17,7 +17,7 @@ class Receipt(db.Model):
     total = db.Column(db.Float(), nullable=False)
 
 class Item(db.Model):
-    receipt_id = db.Column(db.String(50), db.ForeignKey('recepit.id'), nullable=False)
+    receipt_id = db.Column(db.String(50), db.ForeignKey('receipt.id'), nullable=False)
     description = db.Column(db.String(length=200), nullable=False)
     price = db.Column(db.Float(), nullable=False, unique=False)
 
