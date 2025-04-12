@@ -57,8 +57,9 @@ def get_points(receipt_id):
     if not receipt:
         return {"error": "Receipt not found"}, 404
     # 1 pointer for every alphanumeric character in the retailer name
-    logger.info('test')
-    logger.info('test docker compose')
+    items = db.session.query(Item).filter(Item.receipt_id==receipt_id).all()
+    for item in items:
+        points += len((item.description).strip())
 
     # 50 points if total is round dollar amount with no cents
 
@@ -69,7 +70,7 @@ def get_points(receipt_id):
     # trimmed length of item multiple of 3, * 0.2 round 
     
     return jsonify({
-        "id": receipt.id
+        "points": points
     })
     
     
