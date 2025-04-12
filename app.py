@@ -53,11 +53,12 @@ def process():
 @app.route('/receipts/<string:receipt_id>/points', methods=['GET'])
 def get_points(receipt_id):
     receipt = db.session.get(Receipt, receipt_id)
-
+    points = 0
     if not receipt:
         return {"error": "Receipt not found"}, 404
     # 1 pointer for every alphanumeric character in the retailer name
-     
+    logger.info('test')
+    logger.info('test docker compose')
 
     # 50 points if total is round dollar amount with no cents
 
