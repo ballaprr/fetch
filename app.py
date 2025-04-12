@@ -1,9 +1,12 @@
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_restful import Api
+import uuid
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///processor.db'
 db = SQLAlchemy(app)
+api = Api(app)
 
 # Database:
 # Receipt table: id (char(200)), retailer (char(100)), purchaseDate (Date), purchaseTime(Time), total(float)
@@ -24,13 +27,21 @@ class Item(db.Model):
 
 # post request: pass in receipt json and store in recept and item table, generate id and store, response should be the id
 
+@app.route('/receipts/process', methods=['POST'])
+def process():
+    data = request.get_json()
+
+    receipt_id = str(uuid.uuid5)
+
+    receipt = Receipt(id=receipt_id, retailer=data['retailer'], purchaseDate=data['purchaseDate'], purchaseTime=data['purchaseTime'], total=data['total'])
+
+    db.session.add(receipt)
+
+    for item in data.get('items', []):
+        db.session.add(Item(receipt_id=receipt_id, description=item['shortDescription'], price=item['price']))
+
+    return receipt_id, 201
 # get request: pass in id to path and using criteria compute the points and return
-
-@app.route('/', methods=['GET'])
-def hello_world():
-    return 'Hello, World!'
-
-
 
 if __name__ == '__main__':
     with app.app_context():
