@@ -1,7 +1,8 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 import uuid
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///processor.db'
@@ -31,16 +32,17 @@ class Item(db.Model):
 def process():
     data = request.get_json()
 
-    receipt_id = str(uuid.uuid5)
+    receipt_id = str(uuid.uuid4())
 
-    receipt = Receipt(id=receipt_id, retailer=data['retailer'], purchaseDate=data['purchaseDate'], purchaseTime=data['purchaseTime'], total=data['total'])
+    receipt = Receipt(id=receipt_id, retailer=data['retailer'], purchaseDate=datetime.strptime(data['purchaseDate'], '%Y-%m-%d'), purchaseTime=datetime.strptime(data['purchaseTime'], '%H:%M').time(), total=data['total'])
 
     db.session.add(receipt)
 
     for item in data.get('items', []):
         db.session.add(Item(receipt_id=receipt_id, description=item['shortDescription'], price=item['price']))
 
-    return receipt_id, 201
+    db.session.commit()
+    return jsonify({"id": receipt_id}), 201
 # get request: pass in id to path and using criteria compute the points and return
 
 if __name__ == '__main__':
