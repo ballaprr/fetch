@@ -59,25 +59,22 @@ def get_points(receipt_id):
         return {"error": "Receipt not found"}, 404
     # 1 pointer for every alphanumeric character in the retailer name
     items = db.session.query(Item).filter(Item.receipt_id==receipt_id).all()
-    points += len((receipt.retailer).strip())
-
+    points = sum(c.isalnum() for c in receipt.retailer)
     # 50 points if total is round dollar amount with no cents
     # 25 points if total is multiple of .25
     if (receipt.total%.25 == 0):
         points += 25
         if (receipt.total%1.00 == 0):
-            point += 50
+            points += 50
     # 5 points for every two items in the receipt
     points += len(items)//2 * 5
     # trimmed length of item multiple of 3, price * 0.2 round 
     for item in items:
         if (len((item.description).strip()) %3 == 0):
             points += math.ceil(item.price * .2)
-
     # 6 points if the day of purchase is odd
     if (int(receipt.purchaseDate.day) %2 == 1):
         points += 6
-
     # 10 points if time is between 2:00 and 4:00 pm
     if (datetime.strptime("14:00:00", "%H:%M:%S").time() <= receipt.purchaseTime < datetime.strptime("16:00:00", "%H:%M:%S").time()):
         points += 10
