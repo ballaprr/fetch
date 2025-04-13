@@ -1,9 +1,5 @@
 # Fetch Assessment
 
-## Table of Contents
-1. [Technology](#technology)
-
-
 ## Technology
 Python 3.9.0
 - Flask
