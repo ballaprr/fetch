@@ -71,10 +71,12 @@ def get_points(receipt_id):
     points += len(items)//2 * 5
     # trimmed length of item multiple of 3, price * 0.2 round 
     for item in items:
-        if (len((item.shortDescription).strip()) %3 == 0):
+        if (len((item.description).strip()) %3 == 0):
             points += math.ceil(item.price * .2)
 
     # 6 points if the day of purchase is odd
+    if (int(receipt.purchaseDate.day) %2 == 1):
+        points += 6
 
     # 10 points if time is between 2:00 and 4:00 pm
     return jsonify({
