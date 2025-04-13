@@ -4,6 +4,7 @@ from flask_restful import Api
 import uuid
 from datetime import datetime
 import logging
+import math
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -58,17 +59,24 @@ def get_points(receipt_id):
         return {"error": "Receipt not found"}, 404
     # 1 pointer for every alphanumeric character in the retailer name
     items = db.session.query(Item).filter(Item.receipt_id==receipt_id).all()
-    for item in items:
-        points += len((item.description).strip())
+    points += len((receipt.retailer).strip())
 
     # 50 points if total is round dollar amount with no cents
-
     # 25 points if total is multiple of .25
-
+    if (receipt.total%.25 == 0):
+        points += 25
+        if (receipt.total%1.00 == 0):
+            point += 50
     # 5 points for every two items in the receipt
+    points += len(items)//2 * 5
+    # trimmed length of item multiple of 3, price * 0.2 round 
+    for item in items:
+        if (len((item.shortDescription).strip()) %3 == 0):
+            points += math.ceil(item.price * .2)
 
-    # trimmed length of item multiple of 3, * 0.2 round 
-    
+    # 6 points if the day of purchase is odd
+
+    # 10 points if time is between 2:00 and 4:00 pm
     return jsonify({
         "points": points
     })
