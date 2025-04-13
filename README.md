@@ -8,10 +8,10 @@ Python 3.9.0
 - Docker
 
 
-### Prerequisites
+## Prerequisites
 - Ensure Docker is Installed
 
-### Running
+## Running
 
 Build the image
 ```bash
