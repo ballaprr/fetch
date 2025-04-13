@@ -79,6 +79,9 @@ def get_points(receipt_id):
         points += 6
 
     # 10 points if time is between 2:00 and 4:00 pm
+    if (datetime.strptime("14:00:00", "%H:%M:%S").time() <= receipt.purchaseTime < datetime.strptime("16:00:00", "%H:%M:%S").time()):
+        points += 10
+
     return jsonify({
         "points": points
     })
