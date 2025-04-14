@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_restful import Api
+from flask_restful import Api, abort
 import uuid
 from datetime import datetime
 import logging
@@ -34,16 +34,20 @@ class Item(db.Model):
 
 @app.route('/receipts/process', methods=['POST'])
 def process():
-    data = request.get_json()
+    data = request.json
 
-    receipt_id = str(uuid.uuid4())
-
-    receipt = Receipt(id=receipt_id, retailer=data['retailer'], purchaseDate=datetime.strptime(data['purchaseDate'], '%Y-%m-%d'), purchaseTime=datetime.strptime(data['purchaseTime'], '%H:%M').time(), total=data['total'])
-
+    if (data.get('retailer') and data.get('purchaseDate') and data.get('purchaseTime') and data.get('total')):
+        receipt_id = str(uuid.uuid4())
+        receipt = Receipt(id=receipt_id, retailer=data.get('retailer'), purchaseDate=datetime.strptime(data.get('purchaseDate'), '%Y-%m-%d'), purchaseTime=datetime.strptime(data.get('purchaseTime'), '%H:%M').time(), total=data.get('total'))
+    else:
+        return {"error": "Invalid Receipt input"}, 400
     db.session.add(receipt)
 
     for item in data.get('items', []):
-        db.session.add(Item(receipt_id=receipt_id, description=item['shortDescription'], price=item['price']))
+        if (item.get('shortDescription') and item.get('price')):
+           db.session.add(Item(receipt_id=receipt_id, description=item.get('shortDescription'), price=item.get('price'))) 
+        else:
+            return {"error": "Invalid Item input"}, 400
 
     db.session.commit()
     return jsonify({"id": receipt_id}), 201
@@ -60,6 +64,7 @@ def get_points(receipt_id):
     # 1 pointer for every alphanumeric character in the retailer name
     items = db.session.query(Item).filter(Item.receipt_id==receipt_id).all()
     points = sum(c.isalnum() for c in receipt.retailer)
+    logger.info(points)
     # 50 points if total is round dollar amount with no cents
     # 25 points if total is multiple of .25
     if (receipt.total%.25 == 0):
