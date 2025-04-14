@@ -8,6 +8,7 @@ services:
       - .:/app
     environment:
       - FLASK_DEBUG=1
+    command: gunicorn --bind 0.0.0.0:5000 app:app
 
   test:
     build: .
