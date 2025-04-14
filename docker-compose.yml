@@ -8,3 +8,9 @@ services:
       - .:/app
     environment:
       - FLASK_DEBUG=1
+
+  test:
+    build: .
+    volumes: 
+      - .:/app
+    command: pytest
