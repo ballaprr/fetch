@@ -1,2 +1,4 @@
 processor.db
 *.pyc
+__pycache__
+tests/__pycache__
