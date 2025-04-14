@@ -14,4 +14,4 @@ services:
     build: .
     volumes: 
       - .:/app
-    command: pytest
+    command: bash -c "python3 init_db.py && pytest"
