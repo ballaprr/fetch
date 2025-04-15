@@ -40,7 +40,7 @@ Open Postman or curl
 
 Execute the following Post request
 ```bash
-curl -X POST http://localhost:5000/receipts \
+curl -X POST http://localhost:5000/receipts/process \
   -H "Content-Type: application/json" \
   -d '{
   "retailer": "Target",
