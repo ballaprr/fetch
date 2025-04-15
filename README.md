@@ -9,7 +9,7 @@ Python 3.9.0
 
 
 ## Prerequisites
-- Ensure Docker is Installed
+- Ensure Docker is Installed and Running
 
 ## Running
 
@@ -26,7 +26,7 @@ docker-compose up
 ```
 Run only the web service
 ```bash
-docker-compose run web
+docker-compose run --service-ports web
 ```
 
 Run only the test service
